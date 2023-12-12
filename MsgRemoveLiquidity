@@ -1,0 +1,79 @@
+package liquidity
+
+import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+// LiquidityPool represents a liquidity pool
+type LiquidityPool struct {
+	ID          uint64         `json:"id"`
+	ReserveA     sdk.Coin       `json:"reserve_a"`
+	ReserveB     sdk.Coin       `json:"reserve_b"`
+	Liquidity    sdk.Coin       `json:"liquidity"`
+	TotalShares  sdk.Dec        `json:"total_shares"`
+}
+
+// MsgAddLiquidity defines the AddLiquidity message
+type MsgAddLiquidity struct {
+	Sender    sdk.AccAddress `json:"sender"`
+	PoolID    uint64         `json:"pool_id"`
+	AssetA    sdk.Coin       `json:"asset_a"`
+	AssetB    sdk.Coin       `json:"asset_b"`
+	MinShares sdk.Dec        `json:"min_shares"`
+}
+
+// MsgRemoveLiquidity defines the RemoveLiquidity message
+type MsgRemoveLiquidity struct {
+	Sender sdk.AccAddress `json:"sender"`
+	PoolID uint64         `json:"pool_id"`
+	Shares sdk.Dec        `json:"shares"`
+}
+
+// HandleMsgRemoveLiquidity handles the RemoveLiquidity message
+func HandleMsgRemoveLiquidity(ctx sdk.Context, k Keeper, msg MsgRemoveLiquidity) sdk.Result {
+	pool, found := k.GetLiquidityPool(ctx, msg.PoolID)
+	if !found {
+		return sdk.ErrUnknownRequest(fmt.Sprintf("liquidity pool with ID %d not found", msg.PoolID)).Result()
+	}
+
+	// Remove liquidity handling logic here...
+
+	// Emit an event
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, sdk.AttributeValueCategory),
+		),
+	)
+
+	return sdk.Result{Code: sdk.CodeOK, Events: ctx.EventManager().ABCIEvents()}
+}
+
+// MsgGetLiquidityPool defines the GetLiquidityPool message
+type MsgGetLiquidityPool struct {
+	PoolID uint64 `json:"pool_id"`
+}
+
+// HandleMsgGetLiquidityPool handles the GetLiquidityPool message
+func HandleMsgGetLiquidityPool(ctx sdk.Context, k Keeper, msg MsgGetLiquidityPool) sdk.Result {
+	pool, found := k.GetLiquidityPool(ctx, msg.PoolID)
+	if !found {
+		return sdk.ErrUnknownRequest(fmt.Sprintf("liquidity pool with ID %d not found", msg.PoolID)).Result()
+	}
+
+	// Handle getting liquidity pool information here...
+
+	// Emit an event
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			sdk.EventTypeMessage,
+			sdk.NewAttribute(sdk.AttributeKeyModule, sdk.AttributeValueCategory),
+		),
+	)
+
+	return sdk.Result{Code: sdk.CodeOK, Events: ctx.EventManager().ABCIEvents()}
+}
+
+// Additional functions and modifications...
